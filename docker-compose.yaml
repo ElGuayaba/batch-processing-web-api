@@ -1,0 +1,32 @@
+version: '3.2'
+
+services:
+  batch-processing-app:
+    image: batch-processing-app:latest
+    build:
+      context: ./src/
+      dockerfile: Dockerfile
+    links:
+      - "sql-server:database"
+      - "seq:logs-dashboard"
+    ports:
+      - "5001:80"
+      - "50001:443"
+    depends_on:
+     - sql-server
+     - seq
+
+  sql-server:
+    image: sql-server
+    build:
+      context: ./src/job-database
+      dockerfile: Dockerfile
+    ports:
+      - "1400:1443"
+
+  seq:
+    image: datalust/seq:latest
+    environment:
+      ACCEPT_EULA: "Y"
+    ports:
+    - "5002:80"
